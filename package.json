@@ -1,0 +1,31 @@
+{
+  "name": "starter-gulp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx gulp clean && npx gulp build",
+    "start": "npx gulp clean && npx gulp dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yoona8/starter-gulp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yoona8/starter-gulp/issues"
+  },
+  "homepage": "https://github.com/Yoona8/starter-gulp#readme",
+  "devDependencies": {
+    "browser-sync": "2.26.7",
+    "del": "5.1.0",
+    "gulp": "4.0.2",
+    "gulp-csso": "4.0.1",
+    "gulp-plumber": "1.2.1",
+    "gulp-rename": "2.0.0",
+    "gulp-sass": "4.1.0",
+    "gulp-sourcemaps": "2.6.5"
+  }
+}
