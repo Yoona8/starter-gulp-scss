@@ -1,31 +1,34 @@
 'use strict';
 
 const gulp = require('gulp');
-const { src, dest } = require('gulp');
-let sass = require('gulp-sass');
-let plumber = require('gulp-plumber');
-let sourcemap = require('gulp-sourcemaps');
-let mincss = require('gulp-csso');
-let rename = require('gulp-rename');
-let del = require('del');
-let server = require('browser-sync').create();
+const { src, dest, series } = require('gulp');
+const sass = require('gulp-sass');
+const concatCss = require('gulp-concat-css');
+const plumber = require('gulp-plumber');
+const sourcemap = require('gulp-sourcemaps');
+const mincss = require('gulp-csso');
+const rename = require('gulp-rename');
+const del = require('del');
+const server = require('browser-sync').create();
 
-let paths = {
+const paths = {
     src: 'src/',
     scssEntry: 'src/styles/style.scss',
     scssSrc: 'src/styles/**/*.scss',
+    cssEntry: 'src/styles/style.css',
+    cssSrc: 'src/styles/**/*.css',
     htmlSrc: 'src/*.html',
     jsSrc: 'src/scripts/*.js',
     assetsSrc: 'src/assets/**/*.*',
     buildDest: 'build/',
 };
 
-gulp.task('clean', function (done) {
+function clean(done) {
     del(paths.buildDest);
     done();
-});
+}
 
-gulp.task('css', function () {
+function buildScss() {
     return src(paths.scssEntry)
         .pipe(plumber())
         .pipe(sourcemap.init())
@@ -35,42 +38,57 @@ gulp.task('css', function () {
         .pipe(sourcemap.write('.'))
         .pipe(dest(paths.buildDest))
         .pipe(server.stream());
-});
+}
 
-gulp.task('server', function () {
-    server.init({
-        server: paths.buildDest
-    });
+function buildCss() {
+    return src(paths.cssEntry)
+        .pipe(plumber())
+        .pipe(sourcemap.init())
+        .pipe(concatCss(paths.buildDest + 'style.css'))
+        .pipe(mincss())
+        .pipe(rename('style.min.css'))
+        .pipe(sourcemap.write('.'))
+        .pipe(dest(paths.buildDest))
+        .pipe(server.stream());
+}
 
-    gulp.watch(paths.scssSrc, gulp.series('css'));
-    gulp.watch(paths.htmlSrc, gulp.series('html', 'reload'));
-    gulp.watch(paths.jsSrc, gulp.series('js', 'reload'));
-});
-
-gulp.task('html', function () {
+function html() {
     return src(paths.htmlSrc)
         .pipe(dest(paths.buildDest));
-});
+}
 
-gulp.task('js', function () {
+function js() {
     return src(paths.jsSrc, {
         base: paths.src
     })
         .pipe(dest(paths.buildDest));
-});
+}
 
-gulp.task('copy', function () {
+function reloadServer(done) {
+    server.reload();
+    done();
+}
+
+function copy() {
     return src(paths.assetsSrc, {
         base: paths.src
     })
         .pipe(dest(paths.buildDest));
-});
+}
 
-gulp.task('reload', function (done) {
-    server.reload();
-    done();
-});
+function runServer() {
+    server.init({
+        server: paths.buildDest
+    });
 
-gulp.task('build', gulp.series('css', 'html', 'js', 'copy'));
+    // gulp.watch(paths.scssSrc, series(buildScss));
+    gulp.watch(paths.cssSrc, series(buildCss));
+    gulp.watch(paths.htmlSrc, series(html, reloadServer));
+    gulp.watch(paths.jsSrc, series(js, reloadServer));
+}
 
-gulp.task('dev', gulp.series('build', 'server'));
+exports.clean = clean;
+// exports.build = series(buildScss, html, js, copy);
+exports.build = series(buildCss, html, js, copy);
+// exports.dev = series(buildScss, html, js, copy, runServer);
+exports.dev = series(buildCss, html, js, copy, runServer);
