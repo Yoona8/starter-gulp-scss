@@ -1,6 +1,7 @@
 'use strict';
 
-let gulp = require('gulp');
+const gulp = require('gulp');
+const { src } = require('gulp');
 let sass = require('gulp-sass');
 let plumber = require('gulp-plumber');
 let sourcemap = require('gulp-sourcemaps');
@@ -25,7 +26,7 @@ gulp.task('clean', function (done) {
 });
 
 gulp.task('css', function () {
-    return gulp.src(paths.scssEntry)
+    return src(paths.scssEntry)
         .pipe(plumber())
         .pipe(sourcemap.init())
         .pipe(sass())
@@ -47,19 +48,19 @@ gulp.task('server', function () {
 });
 
 gulp.task('html', function () {
-    return gulp.src(paths.htmlSrc)
+    return src(paths.htmlSrc)
         .pipe(gulp.dest(paths.buildDest));
 });
 
 gulp.task('js', function () {
-    return gulp.src(paths.jsSrc, {
+    return src(paths.jsSrc, {
         base: paths.src
     })
         .pipe(gulp.dest(paths.buildDest));
 });
 
 gulp.task('copy', function () {
-    return gulp.src(paths.assetsSrc, {
+    return src(paths.assetsSrc, {
         base: paths.src
     })
         .pipe(gulp.dest(paths.buildDest));
