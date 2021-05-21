@@ -1,11 +1,16 @@
+:root {
+    --bg-main: #9ea8ff;
+    --color-text-main: darkslateblue;
+}
+
 body {
     margin: 100px auto;
     font-family: 'Helvetica', Arial, sans-serif;
     text-align: center;
-    color: darkslateblue;
-    background-color: #9ea8ff;
+    color: var(--color-text-main);
+    background-color: var(--bg-main);
 }
 
 h1 {
-    font-weight: 400;
+    font-weight: 600;
 }

@@ -19,14 +19,16 @@
   },
   "homepage": "https://github.com/Yoona8/starter-gulp#readme",
   "devDependencies": {
-    "browser-sync": "2.26.7",
+    "autoprefixer": "10.2.5",
+    "browser-sync": "2.26.14",
     "del": "5.1.0",
     "gulp": "4.0.2",
-    "gulp-concat-css": "3.1.0",
     "gulp-csso": "4.0.1",
     "gulp-plumber": "1.2.1",
+    "gulp-postcss": "9.0.0",
     "gulp-rename": "2.0.0",
     "gulp-sass": "4.1.0",
-    "gulp-sourcemaps": "2.6.5"
+    "gulp-sourcemaps": "2.6.5",
+    "postcss": "8.3.0"
   }
 }

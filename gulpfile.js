@@ -1,94 +1,80 @@
 'use strict';
 
 const gulp = require('gulp');
-const { src, dest, series } = require('gulp');
+const {src, dest, series} = require('gulp');
 const sass = require('gulp-sass');
-const concatCss = require('gulp-concat-css');
 const plumber = require('gulp-plumber');
 const sourcemap = require('gulp-sourcemaps');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
 const mincss = require('gulp-csso');
 const rename = require('gulp-rename');
 const del = require('del');
 const server = require('browser-sync').create();
 
 const paths = {
-    src: 'src/',
-    scssEntry: 'src/styles/style.scss',
-    scssSrc: 'src/styles/**/*.scss',
-    cssEntry: 'src/styles/style.css',
-    cssSrc: 'src/styles/**/*.css',
-    htmlSrc: 'src/*.html',
-    jsSrc: 'src/scripts/*.js',
-    assetsSrc: 'src/assets/**/*.*',
-    buildDest: 'build/',
+  src: 'src/',
+  scssEntry: 'src/styles/style.scss',
+  scssSrc: 'src/styles/**/*.scss',
+  htmlSrc: 'src/*.html',
+  jsSrc: 'src/scripts/*.js',
+  assetsSrc: 'src/assets/**/*.*',
+  buildDest: 'build/',
 };
 
-function clean(done) {
-    del(paths.buildDest);
-    done();
+const clean = (done) => {
+  del(paths.buildDest);
+  done();
 }
 
-function buildScss() {
-    return src(paths.scssEntry)
-        .pipe(plumber())
-        .pipe(sourcemap.init())
-        .pipe(sass())
-        .pipe(mincss())
-        .pipe(rename('style.min.css'))
-        .pipe(sourcemap.write('.'))
-        .pipe(dest(paths.buildDest))
-        .pipe(server.stream());
+const scss = () => {
+  return src(paths.scssEntry)
+    .pipe(plumber())
+    .pipe(sourcemap.init())
+    .pipe(sass())
+    .pipe(postcss([
+      autoprefixer()
+    ]))
+    .pipe(mincss())
+    .pipe(rename('style.min.css'))
+    .pipe(sourcemap.write('.'))
+    .pipe(dest(paths.buildDest))
+    .pipe(server.stream());
 }
 
-function buildCss() {
-    return src(paths.cssEntry)
-        .pipe(plumber())
-        .pipe(sourcemap.init())
-        .pipe(concatCss(paths.buildDest + 'style.css'))
-        .pipe(mincss())
-        .pipe(rename('style.min.css'))
-        .pipe(sourcemap.write('.'))
-        .pipe(dest(paths.buildDest))
-        .pipe(server.stream());
+const html = () => {
+  return src(paths.htmlSrc)
+    .pipe(dest(paths.buildDest))
+    .pipe(server.stream());
 }
 
-function html() {
-    return src(paths.htmlSrc)
-        .pipe(dest(paths.buildDest));
+const js = () => {
+  return src(paths.jsSrc)
+    .pipe(dest(paths.buildDest))
+    .pipe(server.stream());
 }
 
-function js() {
-    return src(paths.jsSrc, {
-        base: paths.src
-    })
-        .pipe(dest(paths.buildDest));
+const copy = () => {
+  return src(paths.assetsSrc, {
+    base: paths.src
+  })
+    .pipe(dest(paths.buildDest));
 }
 
-function reloadServer(done) {
-    server.reload();
-    done();
+const serve = (done) => {
+  server.init({
+    server: paths.buildDest
+  });
+
+  done();
 }
 
-function copy() {
-    return src(paths.assetsSrc, {
-        base: paths.src
-    })
-        .pipe(dest(paths.buildDest));
-}
-
-function runServer() {
-    server.init({
-        server: paths.buildDest
-    });
-
-    // gulp.watch(paths.scssSrc, series(buildScss));
-    gulp.watch(paths.cssSrc, series(buildCss));
-    gulp.watch(paths.htmlSrc, series(html, reloadServer));
-    gulp.watch(paths.jsSrc, series(js, reloadServer));
+const watch = () => {
+  gulp.watch(paths.scssSrc, series(scss));
+  gulp.watch(paths.htmlSrc, series(html));
+  gulp.watch(paths.jsSrc, series(js));
 }
 
 exports.clean = clean;
-// exports.build = series(buildScss, html, js, copy);
-exports.build = series(buildCss, html, js, copy);
-// exports.dev = series(buildScss, html, js, copy, runServer);
-exports.dev = series(buildCss, html, js, copy, runServer);
+exports.build = series(scss, html, js, copy);
+exports.dev = series(scss, html, js, copy, serve, watch);
