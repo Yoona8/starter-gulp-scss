@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "color-no-invalid-hex": true,
+    "color-hex-case": "upper",
+    "color-hex-length": "long",
+    "declaration-no-important": true,
+    "block-no-empty": true,
+    "length-zero-no-unit": true,
+    "font-weight-notation": "numeric",
+    "declaration-block-semicolon-newline-after": "always",
+    "declaration-block-semicolon-space-before": "never",
+    "block-opening-brace-newline-after": "always",
+    "block-closing-brace-empty-line-before": "never",
+    "block-closing-brace-newline-after": "always"
+  }
+}

@@ -4,9 +4,10 @@
   "description": "",
   "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run stylelint",
     "build": "npx gulp clean && npx gulp build",
-    "start": "npx gulp clean && npx gulp dev"
+    "start": "npx gulp clean && npx gulp dev",
+    "stylelint": "stylelint \"src/styles/**/*.scss\" --syntax scss"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "gulp-rename": "2.0.0",
     "gulp-sass": "4.1.0",
     "gulp-sourcemaps": "2.6.5",
-    "postcss": "8.3.0"
+    "postcss": "8.3.0",
+    "stylelint": "13.13.1"
   }
 }
